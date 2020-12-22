@@ -1,4 +1,5 @@
 const gameContainer = document.getElementById("game");
+
 const COLORS = [
   "red",
   "blue",
@@ -45,7 +46,7 @@ currentScoreElement.innerText = currentScoreCounter;
 let flippedCards = [];
 let matchedCounter = 0;
 
-document.querySelector('#new-game').addEventListener('click', function(e) {
+document.querySelector('#game-options').addEventListener('click', function(e) {
   e.preventDefault();
   resetGame();
 });

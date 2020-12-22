@@ -7,12 +7,29 @@
   </head>
   <body>
     <h1>Memory Game!</h1>
-    <div id="scores">
-      <span id="best-score-label">best score: </span><span id="best-score"></span><br />
-      <span>current score: </span><span id="current-score"></span></p>
-    </div>
-    <button id="new-game">New Game</button>
-    <button id="reset-scores">Reset Best Score</button>
+
+    <section id="top">
+      <div id="scores">
+        <div><span id="best-score-text"></span><span id="best-score"></span></div>
+        <div><span>current score: </span><span id="current-score"></span></div>
+        <button id="reset-score">Reset Scores</button>
+      </div>
+      <div id="game-options">
+        <form action="">
+          <span>play with </span>
+          <select id="match-pairs" name="match-pairs">
+            <option value="1">3</option>
+            <option value="1">4</option>
+            <option value="1" selected="selected">5</option>
+            <option value="1">6</option>
+            <option value="1">7</option>
+          </select> 
+          <span> pairs... </span>
+          <input type="submit" value="Go!">
+        </form>
+      </div>
+    </section>
+
     <div id="game">
     </div>
     <script src="script.js"></script>
