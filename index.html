@@ -7,28 +7,33 @@
   </head>
   <body>
     <h1>Memory Game!</h1>
-
-    <section id="top">
-      <div id="scores">
-        <div><span id="best-score-text"></span><span id="best-score"></span></div>
-        <div><span>current score: </span><span id="current-score"></span></div>
-        <button id="reset-score">Reset Scores</button>
-      </div>
+    
+    <div id="top">
       <div id="game-options">
-        <form action="">
+        <form action="" id="new-game">
           <span>play with </span>
           <select id="match-pairs" name="match-pairs">
-            <option value="1">3</option>
-            <option value="1">4</option>
-            <option value="1" selected="selected">5</option>
-            <option value="1">6</option>
-            <option value="1">7</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5" selected="selected">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
           </select> 
           <span> pairs... </span>
           <input type="submit" value="Go!">
         </form>
       </div>
-    </section>
+      <div id="scores">
+        <button id="reset-this-score">Reset THIS Best Score</button> <button id="reset-all-scores">Reset ALL Best Scores</button>
+        <div>best score for <span id="best-score-pairs">#</span> pairs: <span id="best-score" class="score"></span></div>
+        <div>current score: <span id="current-score" class="score"></span></div>
+      </div>
+    </div>
 
     <div id="game">
     </div>

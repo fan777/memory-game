@@ -1,17 +1,26 @@
-const gameContainer = document.getElementById("game");
+const gameContainer = document.getElementById('game');
+const bestScore = document.getElementById('best-score');
+const currentScore = document.getElementById('current-score');
 
-const COLORS = [
-  "red",
-  "blue",
-  "green",
-  "orange",
-  "purple",
-  "red",
-  "blue",
-  "green",
-  "orange",
-  "purple"
-];
+let flippedCards = [];
+let successfulMatches = 0;
+let eligiblePairs = 0;
+let currentScoreCounter = 0;
+
+function randomRGB() {
+  const r = Math.floor(Math.random() * 256);
+  const g = Math.floor(Math.random() * 256);
+  const b = Math.floor(Math.random() * 256);
+  return `rgb(${r},${g},${b})`;
+}
+
+function getArrayOfColors(pairs) {
+  let COLORS = [];
+  while (pairs--) {
+    COLORS.push(randomRGB());
+  }
+  return COLORS.concat(COLORS);
+}
 
 function shuffle(array) {
   let counter = array.length;
@@ -25,66 +34,26 @@ function shuffle(array) {
   return array;
 }
 
-let shuffledColors = shuffle(COLORS);
-
 function createDivsForColors(colorArray) {
   for (let color of colorArray) {
-    const newDiv = document.createElement("div");
-    newDiv.classList.add(color);
+    const newDiv = document.createElement('div');
+    newDiv.dataset.color = color;
     newDiv.addEventListener("click", handleCardClick);
     gameContainer.append(newDiv);
   }
 }
 
-const bestScoreElement = document.getElementById('best-score');
-bestScoreElement.innerText = localStorage.getItem('best-score') || '--';
-
-const currentScoreElement = document.getElementById('current-score');
-let currentScoreCounter = 0;
-currentScoreElement.innerText = currentScoreCounter;
-
-let flippedCards = [];
-let matchedCounter = 0;
-
-document.querySelector('#game-options').addEventListener('click', function(e) {
-  e.preventDefault();
-  resetGame();
-});
-
-document.querySelector('#reset-scores').addEventListener('click', function(e) {
-  e.preventDefault();
-  resetGame();
-
-  localStorage.removeItem('best-score');
-  bestScoreElement.innerText = localStorage.getItem('best-score') || '--';
-  
-});
-
-// TODO: Implement this function!
-function handleCardClick(event) {
-  //console.log("you just clicked", event.target);
-  if (flippedCards.length < 2 && !flippedCards.includes(event.target) && !(matchedCounter === shuffledColors.length / 2)) {
-    currentScoreCounter++;
-    currentScoreElement.innerText = currentScoreCounter;
-    flippedCards.push(event.target);
-    event.target.style.backgroundColor = event.target.className;
-    if (flippedCards.length === 2) {
-      if (flippedCards[0].className === flippedCards[1].className) {
-        resetFlippedCards(true);
-        if (++matchedCounter === shuffledColors.length / 2) {
-          let bestScore = parseInt(localStorage.getItem('best-score'));
-          bestScore = bestScore < currentScoreCounter ? bestScore : currentScoreCounter;
-          bestScoreElement.innerText = bestScore;
-          localStorage.setItem('best-score', bestScore);
-          alert('you win!!!');
-        }
-      } else {
-        setTimeout(function() { 
-          resetFlippedCards(false)
-        }, 1000);
-      } 
-    }
+function startNewGame() {
+  let shuffledColors = shuffle(getArrayOfColors(eligiblePairs));
+  for (let div of gameContainer.querySelectorAll('div')) {
+    div.remove();
   }
+  document.querySelector('#best-score-pairs').innerText = eligiblePairs;
+  bestScore.innerText = localStorage.getItem('best-score-' + eligiblePairs) || '--';
+  currentScore.innerText = currentScoreCounter = 0;
+  successfulMatches = 0;
+  resetFlippedCards(false);
+  createDivsForColors(shuffledColors);
 }
 
 function resetFlippedCards(isMatched) {
@@ -96,19 +65,50 @@ function resetFlippedCards(isMatched) {
   }
 }
 
-function resetGame() {
-  matchedCounter = 0;
-  currentScoreCounter = 0;
-  currentScoreElement.innerText = currentScoreCounter;
-  
-  resetFlippedCards(flippedCards);
-  for (let div of document.querySelectorAll('#game div')) {
-    div.remove();
+function handleCardClick(event) {
+  // console.log("you just clicked", event.target);
+  if (flippedCards.length < 2 && !flippedCards.includes(event.target) && successfulMatches < eligiblePairs) {
+    currentScore.innerText = ++currentScoreCounter;
+    flippedCards.push(event.target);
+    event.target.style.backgroundColor = event.target.dataset.color;
+    if (flippedCards.length === 2) {
+      if (flippedCards[0].dataset.color === flippedCards[1].dataset.color) {
+        resetFlippedCards(true);
+        if (++successfulMatches == eligiblePairs) {
+          bestScore.innerText = parseInt(bestScore.innerText) < currentScoreCounter ? parseInt(bestScore.innerText) : currentScoreCounter;
+          localStorage.setItem('best-score-' + eligiblePairs, bestScore.innerText);
+          alert('you win!!!');
+        }
+      } else {
+        setTimeout(function() { 
+          resetFlippedCards(false)
+        }, 1000);
+      }
+    }
   }
-  
-  shuffledColors = shuffle(COLORS);
-  createDivsForColors(shuffledColors);
 }
 
-// when the DOM loads
-createDivsForColors(shuffledColors);
+document.querySelector('#reset-all-scores').addEventListener('click', function(e) {
+  e.preventDefault();
+  for (let counter = document.querySelectorAll('option').length; counter > 0; counter--) {
+    localStorage.removeItem('best-score-' + counter);
+  }
+  bestScore.innerText = '--';
+});
+
+document.querySelector('#reset-this-score').addEventListener('click', function(e) {
+  e.preventDefault();
+  localStorage.removeItem('best-score-' + eligiblePairs);
+  bestScore.innerText = '--';
+});
+
+document.querySelector('#new-game').addEventListener('submit', function(e) {
+  e.preventDefault();
+  eligiblePairs = document.getElementById('match-pairs').value;
+  startNewGame();
+})
+
+window.addEventListener('load', function(e) {
+  eligiblePairs = document.querySelector('option[selected="selected"]').value;
+  startNewGame();
+});
